@@ -1,9 +1,9 @@
 #ifndef MANIPULATE
 #define MANIPULATE
 
-#include <QString>
+#include <QStringList>
 
-QString manipulate(QString str);
+QStringList* manipulate(QString str);
 
 #endif // MANIPULATE
 

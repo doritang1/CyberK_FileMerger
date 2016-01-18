@@ -27,30 +27,43 @@ void CK_FileMerger::on_btnSource_clicked()
     QFile sourcefile(this);
 
     //자바스타일 이터레이터 선언
-    QStringListIterator itr(strlstSourcefileNames);
-    while (itr.hasNext())
+    QStringListIterator itrFiles(strlstSourcefileNames);
+    while (itrFiles.hasNext())
     {
-        sourcefile.setFileName(itr.next().toLocal8Bit().constData());
+        sourcefile.setFileName(itrFiles.next().toLocal8Bit().constData());
 
         if(sourcefile.open(QFile::ReadOnly|QFile::Text))
         {
-            //title을 뽑아내고 변환을 위해 엔터키를 정리하는 함수 manipulate
-            QString strManipulated
-                    = manipulate(QString::fromLocal8Bit(sourcefile.readAll()));//한글사용을 위해 fromLocal8Bit함수 사용
+            //한글사용을 위해 fromLocal8Bit함수 사용
+            QString text = QString::fromLocal8Bit(sourcefile.readAll());
+            //엔터키 정리
+            text = text.simplified();
+            //title list를 뽑아내는 함수 manipulate
+            QStringList* strlstTitles;
+            strlstTitles = manipulate(text);
 
+            for(int i=0; i<strlstTitles->length();++i)
+            {
+                QString txt = strlstTitles->at(i);
 
-            ui->txtSource->appendPlainText(strManipulated);
+                if(!txt.isEmpty()){
+
+                    ui->txtSource->appendPlainText(txt+"\t"+text);
+                }
+            }
 
             ui->lineSource->setText(sourcefile.fileName());
             ui->lstSource->addItem(sourcefile.fileName());
         }
         sourcefile.close();
     }
+    //ui->txtSource->appendPlainText("\r\n");
 }
 
 void CK_FileMerger::on_btnStart_clicked()
 {
     QFile targetfile(ui->lineTarget->text());
+
     targetfile.open(QIODevice::WriteOnly);
     targetfile.write(ui->txtSource->toPlainText().toUtf8()+"\n");//utf-8로 저장함
     //파일에 쓰는 다른 방법(근데 실제로는 utf-8로 저장이 안된다.)
