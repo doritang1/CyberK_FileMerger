@@ -24,7 +24,17 @@ void CK_FileMerger::on_btnTarget_clicked()
 void CK_FileMerger::on_btnSource_clicked()
 {   //상대경로 사용
     strlstSourcefileNames = QFileDialog::getOpenFileNames(this, tr("Select Source"), "../../dictionary_v63/SKKU_German_6.3", "HTML (*.htm)");
+
+}
+
+void CK_FileMerger::on_btnStart_clicked()
+{
     QFile sourcefile(this);
+
+    QFile targetfile(ui->lineTarget->text());
+    targetfile.open(QIODevice::WriteOnly|QIODevice::Text);
+    QTextStream out(&targetfile);
+    out.setCodec("UTF-8");
 
     //자바스타일 이터레이터 선언
     QStringListIterator itrFiles(strlstSourcefileNames);
@@ -48,7 +58,8 @@ void CK_FileMerger::on_btnSource_clicked()
 
                 if(!txt.isEmpty()){
 
-                    ui->txtSource->appendPlainText(txt+"\t"+text);
+                    ui->txtSource->setPlainText(txt+" is being compiled");
+                    out<<txt<<"\t"<<text<<"\n";
                 }
             }
 
@@ -56,18 +67,9 @@ void CK_FileMerger::on_btnSource_clicked()
             ui->lstSource->addItem(sourcefile.fileName());
         }
         sourcefile.close();
+
     }
     //ui->txtSource->appendPlainText("\r\n");
-}
-
-void CK_FileMerger::on_btnStart_clicked()
-{
-    QFile targetfile(ui->lineTarget->text());
-
-    targetfile.open(QIODevice::WriteOnly);
-    targetfile.write(ui->txtSource->toPlainText().toUtf8()+"\n");//utf-8로 저장함
-    //파일에 쓰는 다른 방법(근데 실제로는 utf-8로 저장이 안된다.)
-    //QTextStream out(&targetfile);
-    //out<<ui->txtSource->toPlainText().toUtf8();//utf-8로 저장함
+    out<<"\n";
     targetfile.close();
 }
