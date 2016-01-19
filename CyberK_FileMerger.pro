@@ -14,11 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     ck_filemerger.cpp \
-    manipulate.cpp
+    titleextract.cpp \
+    bodyextract.cpp
 
 HEADERS  += \
     ck_filemerger.h \
-    manipulate.h
+    titleextract.h \
+    bodyextract.h
 
 FORMS    += \
     ck_filemerger.ui

@@ -1,6 +1,7 @@
 #include "ck_filemerger.h"
 #include "ui_ck_filemerger.h"
-#include "manipulate.h"
+#include "titleextract.h"
+#include "bodyextract.h"
 #include <QtWidgets>
 
 CK_FileMerger::CK_FileMerger(QWidget *parent) :
@@ -41,6 +42,7 @@ void CK_FileMerger::on_btnStart_clicked()
     while (itrFiles.hasNext())
     {
         sourcefile.setFileName(itrFiles.next().toLocal8Bit().constData());
+        ui->lstSource->addItem(sourcefile.fileName());
 
         if(sourcefile.open(QFile::ReadOnly|QFile::Text))
         {
@@ -48,9 +50,12 @@ void CK_FileMerger::on_btnStart_clicked()
             QString text = QString::fromLocal8Bit(sourcefile.readAll());
             //엔터키 정리
             text = text.simplified();
-            //title list를 뽑아내는 함수 manipulate
+            //title list를 뽑아내는 함수 titleExtract()
             QStringList* strlstTitles;
-            strlstTitles = manipulate(text);
+            strlstTitles = titleExtract(text);
+            //body list를 뽑아내는 함수 bodyExtract(), 나중에 <header>...</header>는 제거한다.
+            QStringList* strlstBodies;
+            strlstBodies = bodyExtract(text);
 
             for(int i=0; i<strlstTitles->length();++i)
             {
@@ -58,13 +63,12 @@ void CK_FileMerger::on_btnStart_clicked()
 
                 if(!txt.isEmpty()){
 
-                    ui->txtSource->setPlainText(txt+" is being compiled");
-                    out<<txt<<"\t"<<text<<"\n";
+                    ui->txtSource->setPlainText(txt+" is being processed.");
+                    out<<txt<<"\t"<<strlstBodies->at(1)<<"\n";
+                    ui->txtSource->appendPlainText(txt+" is compiled over.");
                 }
             }
-
             ui->lineSource->setText(sourcefile.fileName());
-            ui->lstSource->addItem(sourcefile.fileName());
         }
         sourcefile.close();
 

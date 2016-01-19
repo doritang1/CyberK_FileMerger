@@ -1,8 +1,8 @@
-#include <manipulate.h>
+#include "titleextract.h"
 #include <QStringMatcher>
 #include <QtCore>
 
-QStringList* manipulate(QString str)
+QStringList* titleExtract(QString str)
 {
     QString tokenBegin("<title>");
     QString tokenEnd("</title>");
